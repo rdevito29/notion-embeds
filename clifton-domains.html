@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CliftonStrengths Domains</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --st:  #1E6FA5; --st-light: #EBF4FB; --st-mid: #BDD9EF;
+      --ex:  #6B4E9B; --ex-light: #F0EBF8; --ex-mid: #D0BEF0;
+      --inf: #B85218; --inf-light: #FAF0E8; --inf-mid: #EFC8A8;
+      --rb:  #1A7A4A; --rb-light: #E8F5EE; --rb-mid: #A8D8BC;
+      --text: #1A1A2E; --muted: #6B7280; --border: #E5E7EB; --bg: #FFFFFF;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 28px 32px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    header h1 {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+    header p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    /* ── Grid ── */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      flex: 1;
+    }
+
+    /* ── Domain card ── */
+    .card {
+      background: #fff;
+      padding: 24px 26px;
+      cursor: pointer;
+      transition: background 0.15s;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+    }
+    .card:hover { background: #FAFAFA; }
+    .card.active { background: #FAFAFA; }
+    .card.active::after {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      border-radius: 0 2px 2px 0;
+    }
+    .card.st.active::after  { background: var(--st); }
+    .card.ex.active::after  { background: var(--ex); }
+    .card.inf.active::after { background: var(--inf); }
+    .card.rb.active::after  { background: var(--rb); }
+
+    .card-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .card.st  .card-tag { color: var(--st); }
+    .card.ex  .card-tag { color: var(--ex); }
+    .card.inf .card-tag { color: var(--inf); }
+    .card.rb  .card-tag { color: var(--rb); }
+
+    .card-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+    .card.st  .card-dot { background: var(--st); }
+    .card.ex  .card-dot { background: var(--ex); }
+    .card.inf .card-dot { background: var(--inf); }
+    .card.rb  .card-dot { background: var(--rb); }
+
+    .card-name {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    .card-tagline {
+      font-size: 12px;
+      color: var(--muted);
+      font-style: italic;
+      margin-top: 2px;
+    }
+    .card-summary {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.55;
+      margin-top: 4px;
+    }
+
+    .card-themes {
+      margin-top: auto;
+      padding-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+    .theme-chip {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 9px;
+      border-radius: 20px;
+    }
+    .card.st  .theme-chip { background: var(--st-light);  color: var(--st); }
+    .card.ex  .theme-chip { background: var(--ex-light);  color: var(--ex); }
+    .card.inf .theme-chip { background: var(--inf-light); color: var(--inf); }
+    .card.rb  .theme-chip { background: var(--rb-light);  color: var(--rb); }
+
+    /* ── Detail panel ── */
+    .detail {
+      background: #fff;
+      border-top: 1px solid var(--border);
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.3s ease, padding 0.2s ease;
+      padding: 0 32px;
+    }
+    .detail.open {
+      max-height: 600px;
+      padding: 28px 32px 32px;
+    }
+
+    .detail-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 24px;
+    }
+
+    .detail-block h3 {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .detail-block p {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    /* Pairings */
+    .pairings {
+      grid-column: 1 / -1;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      margin-top: 4px;
+    }
+    .pairings h3 {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .pairing-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+    .pairing-item {
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .pairing-label {
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+    .pairing-text {
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    /* Within-domain note */
+    .within-note {
+      grid-column: 1 / -1;
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .within-note strong {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    /* Color tints for detail elements */
+    .detail.st  .within-note { background: var(--st-light);  color: var(--text); }
+    .detail.ex  .within-note { background: var(--ex-light);  color: var(--text); }
+    .detail.inf .within-note { background: var(--inf-light); color: var(--text); }
+    .detail.rb  .within-note { background: var(--rb-light);  color: var(--text); }
+
+    .detail.st  .within-note strong { color: var(--st); }
+    .detail.ex  .within-note strong { color: var(--ex); }
+    .detail.inf .within-note strong { color: var(--inf); }
+    .detail.rb  .within-note strong { color: var(--rb); }
+
+    .detail.st  .pairing-label { color: var(--st); }
+    .detail.ex  .pairing-label { color: var(--ex); }
+    .detail.inf .pairing-label { color: var(--inf); }
+    .detail.rb  .pairing-label { color: var(--rb); }
+
+    .detail.st  .pairing-item { border-color: var(--st-mid); }
+    .detail.ex  .pairing-item { border-color: var(--ex-mid); }
+    .detail.inf .pairing-item { border-color: var(--inf-mid); }
+    .detail.rb  .pairing-item { border-color: var(--rb-mid); }
+
+    /* lead badge */
+    .lead-badge {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 10px;
+      margin-left: 6px;
+      vertical-align: middle;
+      background: var(--st-light);
+      color: var(--st);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>CliftonStrengths — The Four Domains</h1>
+  <p>Select a domain to explore its meaning, contribution, and how it interacts with others.</p>
+</header>
+
+<div class="grid">
+
+  <!-- Strategic Thinking -->
+  <div class="card st" id="card-st" onclick="toggle('st')">
+    <div class="card-tag"><span class="card-dot"></span>Strategic Thinking <span class="lead-badge">Your Lead</span></div>
+    <div class="card-name">Absorb. Analyze. Inform.</div>
+    <div class="card-tagline">The domain of ideas, patterns, and forward vision</div>
+    <div class="card-summary">People who lead here are constantly processing information and orienting toward the future. They stretch the thinking of everyone around them.</div>
+    <div class="card-themes">
+      <span class="theme-chip">Strategic</span><span class="theme-chip">Futuristic</span><span class="theme-chip">Ideation</span><span class="theme-chip">Learner</span>
+      <span class="theme-chip">Intellection</span><span class="theme-chip">Analytical</span><span class="theme-chip">Input</span><span class="theme-chip">Context</span>
+    </div>
+  </div>
+
+  <!-- Executing -->
+  <div class="card ex" id="card-ex" onclick="toggle('ex')">
+    <div class="card-tag"><span class="card-dot"></span>Executing</div>
+    <div class="card-name">Commit. Follow Through. Deliver.</div>
+    <div class="card-tagline">The domain of discipline, ownership, and action</div>
+    <div class="card-summary">People who lead here make things happen. They take ownership of their commitments and turn ideas — anyone's ideas — into real results.</div>
+    <div class="card-themes">
+      <span class="theme-chip">Achiever</span><span class="theme-chip">Arranger</span><span class="theme-chip">Focus</span><span class="theme-chip">Responsibility</span>
+      <span class="theme-chip">Restorative</span><span class="theme-chip">Discipline</span><span class="theme-chip">Consistency</span><span class="theme-chip">Deliberative</span><span class="theme-chip">Belief</span>
+    </div>
+  </div>
+
+  <!-- Influencing -->
+  <div class="card inf" id="card-inf" onclick="toggle('inf')">
+    <div class="card-tag"><span class="card-dot"></span>Influencing</div>
+    <div class="card-name">Take Charge. Speak Up. Move People.</div>
+    <div class="card-tagline">The domain of persuasion, presence, and reach</div>
+    <div class="card-summary">People who lead here are natural champions for ideas and causes. They expand a team's reach far beyond what it could achieve quietly.</div>
+    <div class="card-themes">
+      <span class="theme-chip">Significance</span><span class="theme-chip">Competition</span><span class="theme-chip">Communication</span><span class="theme-chip">Self-Assurance</span>
+      <span class="theme-chip">Command</span><span class="theme-chip">Activator</span><span class="theme-chip">Woo</span><span class="theme-chip">Maximizer</span>
+    </div>
+  </div>
+
+  <!-- Relationship Building -->
+  <div class="card rb" id="card-rb" onclick="toggle('rb')">
+    <div class="card-tag"><span class="card-dot"></span>Relationship Building</div>
+    <div class="card-name">Connect. Include. Hold Together.</div>
+    <div class="card-tagline">The domain of trust, cohesion, and human care</div>
+    <div class="card-summary">People who lead here are the glue of any team. They create the trust and loyalty that allows a group to function as more than the sum of its parts.</div>
+    <div class="card-themes">
+      <span class="theme-chip">Individualization</span><span class="theme-chip">Connectedness</span><span class="theme-chip">Relator</span><span class="theme-chip">Developer</span>
+      <span class="theme-chip">Includer</span><span class="theme-chip">Positivity</span><span class="theme-chip">Empathy</span><span class="theme-chip">Adaptability</span><span class="theme-chip">Harmony</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- Detail panels (one per domain, rendered below the grid) -->
+<div class="detail st" id="detail-st">
+  <div class="detail-inner">
+    <div class="detail-block">
+      <h3>What You Contribute</h3>
+      <p>You help individuals and teams make better decisions by ensuring the right questions get asked. You keep people focused not just on what <em>is</em>, but on what <em>could be</em> — continuously stretching the horizon.</p>
+    </div>
+    <div class="detail-block">
+      <h3>The Gap to Watch</h3>
+      <p>Without Executing themes to ground ideas into action, or Relationship Building to keep people feeling included in the vision, you can seem detached, theoretical, or out of touch with what others experience day-to-day.</p>
+    </div>
+    <div class="within-note">
+      <strong>When multiple Strategic Thinking themes appear together</strong>
+      They form a thinking flywheel — each theme fueling the next. Learner feeds Input, which feeds Ideation, which feeds Strategic and Futuristic. The result is continuous, deep processing of the world. The challenge: this internal richness can be hard to slow down and communicate clearly to others.
+    </div>
+    <div class="pairings">
+      <h3>How Strategic Thinking pairs with the other domains</h3>
+      <div class="pairing-grid">
+        <div class="pairing-item">
+          <div class="pairing-label">+ Executing</div>
+          <div class="pairing-text">The think/do combination. Strategic Thinking finds the destination; Executing gets you there. When both are strong, you can develop strategy <em>and</em> implement it — rare and high-leverage.</div>
+        </div>
+        <div class="pairing-item">
+          <div class="pairing-label">+ Influencing</div>
+          <div class="pairing-text">The visionary amplifier. Strategic Thinking generates the insight; Influencing broadcasts it and makes others believe. You conceive the direction and persuade people to follow.</div>
+        </div>
+        <div class="pairing-item">
+          <div class="pairing-label">+ Relationship Building</div>
+          <div class="pairing-text">The empathetic strategist. Strategic Thinking sees the future; Relationship Building ensures people feel connected to it. Instead of just pointing toward a destination, you bring people along on the journey.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="detail ex" id="detail-ex">
+  <div class="detail-inner">
+    <div class="detail-block">
+      <h3>What You Contribute</h3>
+      <p>You make things real. Where others see potential, you see the steps required. You create accountability, momentum, and the satisfaction of completion that keeps a team moving forward — reliably and repeatedly.</p>
+    </div>
+    <div class="detail-block">
+      <h3>The Gap to Watch</h3>
+      <p>Without Strategic Thinking themes, Executing can produce highly efficient work on the <em>wrong</em> things. Without Influencing or Relationship Building, relentless drive can sometimes read as demanding or inflexible to those around you.</p>
+    </div>
+    <div class="within-note">
+      <strong>When multiple Executing themes appear together</strong>
+      They create a comprehensive engine for getting things done. Achiever (drive) + Arranger (flexibility) + Focus (prioritization) + Responsibility (ownership) means you're not just productive — you're <em>reliably, adaptably</em> productive across many kinds of tasks and shifting environments.
+    </div>
+    <div class="pairings">
+      <h3>How Executing pairs with the other domains</h3>
+      <div class="pairing-grid">
+        <div class="pairing-item">
+          <div class="pairing-label">+ Strategic Thinking</div>
+          <div class="pairing-text">You provide the legs for a vision. This pairing is the core of effective individual leadership — knowing where to go <em>and</em> being able to get there yourself.</div>
+        </div>
+        <div class="pairing-item">
+          <div class="pairing-label">+ Influencing</div>
+          <div class="pairing-text">The driven leader. You execute relentlessly and bring people into the effort. A powerful combination for delivering results <em>through</em> teams rather than despite them.</div>
+        </div>
+        <div class="pairing-item">
+          <div class="pairing-label">+ Relationship Building</div>
+          <div class="pairing-text">The trusted builder. You deliver and take care of people in the process. Others follow you not just because you produce, but because they feel safe doing hard things alongside you.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="detail inf" id="detail-inf">
+  <div class="detail-inner">
+    <div class="detail-block">
+      <h3>What You Contribute</h3>
+      <p>You help teams and ideas get heard. You break through inertia, challenge the status quo, and ensure your group's work reaches a much broader audience. You make things matter to people who aren't already in the room.</p>
+    </div>
+    <div class="detail-block">
+      <h3>The Gap to Watch</h3>
+      <p>Without Strategic Thinking, Influencing can become persuasion in service of the wrong goal. Without Relationship Building, influence can feel like pressure rather than inspiration — moving people <em>away</em> rather than toward you.</p>
+    </div>
+    <div class="within-note">
+      <strong>When multiple Influencing themes appear together</strong>
+      They create someone who can move people across the full spectrum — winning over strangers (Woo), challenging publicly (Command), articulating on a stage (Communication), driving toward first place (Competition). The risk is coming across as domineering if not tempered with genuine care for others.
+    </div>
+    <div class="pairings">
+      <h3>How Influencing pairs with the other domains</h3>
+      <div class="pairing-grid">
+        <div class="pairing-item">
+          <div class="pairing-label">+ Strategic Thinking</div>
+          <div class="pairing-text">You become the person who both develops <em>and</em> sells the vision. Ideas don't just get thought — they get championed. Direction becomes movement.</div>
+        </div>
+        <div class="pairing-item">
+          <div class="pairing-label">+ Executing</div>
+          <div class="pairing-text">You don't just inspire people to act — you act yourself. A highly credible combination because you model what you ask of others. Words and deeds align.</div>
+        </div>
+        <div class="pairing-item">
+          <div class="pairing-label">+ Relationship Building</div>
+          <div class="pairing-text">The magnetic connector. You bring people in and make them feel seen. Influence deepens from persuasion into genuine followership that lasts.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="detail rb" id="detail-rb">
+  <div class="detail-inner">
+    <div class="detail-block">
+      <h3>What You Contribute</h3>
+      <p>You create the conditions for everyone else's strengths to show up. Without strong relationships, strategy goes unshared, execution becomes isolated, and influence feels hollow. You make it <em>safe</em> to do hard things together.</p>
+    </div>
+    <div class="detail-block">
+      <h3>The Gap to Watch</h3>
+      <p>Without Strategic Thinking, you can prioritize harmony and individual needs over the best collective direction. Without Executing, warmth and connection may not translate into tangible outcomes others can see or count on.</p>
+    </div>
+    <div class="within-note">
+      <strong>When multiple Relationship Building themes appear together</strong>
+      They create someone who can engage deeply across many contexts — one-on-one (Relator, Empathy), across a team (Includer, Developer), across a community (Positivity, Connectedness). The depth of human understanding this generates is rare and particularly powerful in sustained leadership roles.
+    </div>
+    <div class="pairings">
+      <h3>How Relationship Building pairs with the other domains</h3>
+      <div class="pairing-grid">
+        <div class="pairing-item">
+          <div class="pairing-label">+ Strategic Thinking</div>
+          <div class="pairing-text">You help ensure the vision is <em>human</em> — that the future being built toward includes and respects the people in it. Strategy becomes something people want to be part of.</div>
+        </div>
+        <div class="pairing-item">
+          <div class="pairing-label">+ Executing</div>
+          <div class="pairing-text">You make hard work feel worth it. When people deliver for you, it's not just obligation — it's because they're genuinely invested in shared success alongside you.</div>
+        </div>
+        <div class="pairing-item">
+          <div class="pairing-label">+ Influencing</div>
+          <div class="pairing-text">Your influence runs deep rather than wide. Where pure Influencing moves crowds, Relationship Building + Influencing moves individuals in ways that last long after the moment.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let active = null;
+
+  function toggle(domain) {
+    const detail = document.getElementById('detail-' + domain);
+    const card   = document.getElementById('card-'   + domain);
+
+    if (active === domain) {
+      detail.classList.remove('open');
+      card.classList.remove('active');
+      active = null;
+      return;
+    }
+
+    // Close previous
+    if (active) {
+      document.getElementById('detail-' + active).classList.remove('open');
+      document.getElementById('card-'   + active).classList.remove('active');
+    }
+
+    detail.classList.add('open');
+    card.classList.add('active');
+    active = domain;
+
+    // Smooth scroll so detail panel is visible
+    setTimeout(() => detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+  }
+</script>
+
+</body>
+</html>
